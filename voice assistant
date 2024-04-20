@@ -1,0 +1,55 @@
+import speech_recognition as sr
+import pyttsx3
+import datetime
+
+# Initialize the speech recognizer and text-to-speech engine
+recognizer = sr.Recognizer()
+engine = pyttsx3.init()
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def listen():
+    with sr.Microphone() as source:
+        print("Listening...")
+        recognizer.adjust_for_ambient_noise(source)  # Adjust for ambient noise
+        audio = recognizer.listen(source)
+
+    try:
+        print("Recognizing...")
+        query = recognizer.recognize_google(audio, language='en-US')
+        print("User said:", query)
+        return query
+    except Exception as e:
+        print("Sorry, I didn't catch that. Can you please repeat?")
+        return ""
+
+def assistant():
+    speak("Hello! I'm your voice assistant. How can I help you today?")
+
+    while True:
+        query = listen().lower()
+
+        if "hello" in query:
+            speak("Hi there! How can I assist you?")
+
+        elif "time" in query:
+            now = datetime.datetime.now()
+            time_str = now.strftime("%H:%M")
+            speak(f"The current time is {time_str}")
+
+        elif "date" in query:
+            now = datetime.datetime.now()
+            date_str = now.strftime("%B %d, %Y")
+            speak(f"Today is {date_str}")
+
+        elif "goodbye" in query or "exit" in query:
+            speak("Goodbye! Have a great day!")
+            break
+
+        else:
+            speak("Sorry, I don't understand that command.")
+
+if __name__ == "__main__":
+    assistant()
